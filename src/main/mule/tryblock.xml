@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5014ae10-c7ec-4435-b28e-e4e9c50323fe" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="c2070ada-61cf-4943-8cbc-32ed464936a5" >
+		<http:request-connection host="localhost" port="4561" />
+	</http:request-config>
+	<flow name="tryblockFlow" doc:id="d5dd6fdd-abb2-4bd1-a4fa-0470bfc64b17" >
+		<http:listener doc:name="Listener" doc:id="12e6e0d0-73f3-4cce-86e2-7c6cbb847101" config-ref="HTTP_Listener_config" path="/test"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="15ab3dac-55b8-447c-95a2-296c1a3307e0" />
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="d69cba6a-55d1-49b1-be16-8837f8cd4e62" />
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="32bdbb9f-624c-4715-9339-5a1baf82b0c8" />
+		<set-payload value="set payload before request pallet" doc:name="Set Payload" doc:id="844b4d72-cb01-450a-90da-7a4b68b8626d" />
+		<try doc:name="Try" doc:id="12262031-d166-458c-a4d6-f6d11b7c4285" >
+			<http:request method="POST" doc:name="Request" doc:id="6f5d89c5-5158-49e4-9f28-3a191050404d" config-ref="HTTP_Request_configuration" path="/test" />
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="74247b02-66fe-49df-b88c-f7e2c136887c" type="HTTP:CONNECTIVITY">
+					<set-payload value="connecctivity issue" doc:name="Set Payload" doc:id="60566ac2-bae2-4e36-a11c-0326a9b5a043" />
+					<logger level="INFO" doc:name="Logger" doc:id="91502bcc-9a01-44ed-a839-295d46a7a8b3" message="#[payload]"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<set-payload value="payload after request pallet" doc:name="Set Payload" doc:id="92faac3c-352f-4efc-9ff8-007240c0b73e" />
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="3604b584-9ef8-4bfb-aef3-117f7ae12c8f" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0f3e8ff6-8542-4d7a-bfdc-486bccf9d6d9" type="HTTP:CONNECTIVITY">
+				<set-payload value="there is a connectivity problem" doc:name="Set Payload" doc:id="d7184dd7-3a59-4496-b39e-8c660aaa857e" />
+			</on-error-continue>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="9d910ac3-91c6-4949-912f-a1e19d56545b" type="ANY">
+				<set-payload value="#[error.description]" doc:name="Set Payload" doc:id="67b39820-98ce-47d0-a3a9-bd68872e5a3c" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<sub-flow name="tryblockSub_Flow" doc:id="b0185df5-db3b-4d2e-acb7-e480d3df050f" >
+		<try doc:name="Try" doc:id="f4ff2635-68ac-44e9-8e8f-0d8aaa36b16e" >
+			<set-payload value="#[payload]" doc:name="Set Payload" doc:id="a6ed486b-f83d-413b-aba6-889e418e2a94" />
+			<set-payload value="#[payload]" doc:name="Set Payload" doc:id="ab66b58a-1486-4bb4-ad0c-6a0fa1db17e5" />
+			<set-payload value="#[payload]" doc:name="Set Payload" doc:id="c5098b80-5c54-4f28-afa8-713f38870c46" />
+			<set-payload value="#[payload]" doc:name="Set Payload" doc:id="60297053-ff37-45dc-a483-6dc7c3c70e5f" />
+			<set-payload value="#[payload]" doc:name="Set Payload" doc:id="dc27feb8-488d-4a70-98e5-f22fee81ee7e" />
+		</try>
+	</sub-flow>
+	<sub-flow name="tryblockSub_Flow1" doc:id="0a39ec7a-fc2c-48a1-80f9-e809edf8874d" />
+	<flow name="tryblockFlow1" doc:id="55cad72c-f398-4fd9-8db0-feea5ac882f7" />
+</mule>
